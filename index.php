@@ -1,17 +1,51 @@
 <?php
 
+//Version 2.0 - Modifications by AndyG. 4/2013
+//Changes
+//- Added error detection for json_decode
+//- Added functionality to fully delete cookie programmatically
+
 // Load required lib files.
 session_start();
 require_once('twitteroauth/twitteroauth.php');
 require_once('config.php');
 header('Content-Type: application/json');
 
+$access_token = false;
+
 if(isset($_COOKIE[OAUTH_COOKIE])){
     // get access token from cookie
+
     $access_token = json_decode($_COOKIE[OAUTH_COOKIE], true);
-}
-else{
-    $access_token = false;
+    //Some systems may not decode json properly if it's escaped
+    if($access_token == null){
+        $access_token = json_decode(str_replace('\"','"', $_COOKIE[OAUTH_COOKIE]), true);
+        if($access_token == null){
+            header("HTTP/1.0 400 Error");
+            switch (json_last_error()) {
+            case JSON_ERROR_DEPTH:
+                echo ' - Maximum stack depth exceeded';
+                break;
+            case JSON_ERROR_STATE_MISMATCH:
+                echo ' - Underflow or the modes mismatch';
+                break;
+            case JSON_ERROR_CTRL_CHAR:
+                echo ' - Unexpected control character found';
+                break;
+            case JSON_ERROR_SYNTAX:
+                echo ' - Syntax error, malformed JSON';
+                break;
+            case JSON_ERROR_UTF8:
+                echo ' - Malformed UTF-8 characters, possibly incorrectly encoded';
+                break;
+            default:
+                echo ' - Unknown error';
+                break;
+            }
+            exit;
+        }
+    }
+
 }
 
 // if token exists
@@ -55,8 +89,24 @@ if (isset($access_token['oauth_token']) && isset($access_token['oauth_token_secr
         if(isset($_REQUEST['locale'])){
             $params['locale'] = $_REQUEST['locale'];
         }
-        // call search
-        $content = $connection->get('search/tweets', $params);
+        //Explicitly delete cookie - Added by AndyG. @ v2.0
+        if(isset($_REQUEST['d'])){
+            setcookie(OAUTH_COOKIE, '', 1, '/', OAUTH_COOKIE_DOMAIN);
+            $content = array('signedout'=>true);
+            exit;
+        }
+        //added in V2.0 by AndyG
+        if(isset($_REQUEST['validate'])){
+            $content = $connection->get('account/verify_credentials','');
+            if($content != null){
+                echo json_encode($content);
+            }
+            exit;
+        }
+        else{
+            // call search
+            $content = $connection->get('search/tweets', $params);
+        }
         // if errors, signed out
         if (isset($content->errors) && count($content->errors)) {
             $content = array('signedout'=>true);

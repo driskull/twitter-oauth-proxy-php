@@ -1,9 +1,16 @@
 <?php
 
+//Version 2.0 by AndyG 4/2013
+//Changes
+//- added try/catch on getAccessToken()
+
 // Start session and load lib
 session_start();
 require_once('twitteroauth/twitteroauth.php');
 require_once('config.php');
+
+$content = null;    //for verification of credentials
+$connection = null; //for getting access token
 
 // check if cookie exists
 if(isset($_COOKIE[OAUTH_COOKIE])){
@@ -19,18 +26,39 @@ else{
         // Create TwitteroAuth object with app key/secret and token key/secret from default phase
         $connection = new TwitterOAuth(CONSUMER_KEY, CONSUMER_SECRET, $_SESSION['oauth_token'], $_SESSION['oauth_token_secret']);
         // get access token from twitter
-        $access_token = $connection->getAccessToken($_REQUEST['oauth_verifier']);
+        try{
+            $access_token = $connection->getAccessToken($_REQUEST['oauth_verifier']);
+        }
+        catch(Exception $e){
+            header("HTTP/1.0 400 Error");
+            echo "Failed retrieving access token: " .$e->getMessage();
+            exit;
+        }
+
+        //Add a credentials validation request. Added v2.0 by AndyG
+        try{
+            $content = $connection->get('account/verify_credentials','');
+        }
+        catch(Exception $e){
+            $error = $e->getMessage();
+        }
         // save token
         $_SESSION['oauth_access_token'] = $access_token;
         // 1 year
         $cookie_life = time() + 31536000;
-        // set cookie
-        setcookie(OAUTH_COOKIE, json_encode($access_token), $cookie_life, '/', OAUTH_COOKIE_DOMAIN);
-        header('Location: ./callback.php');
+        if($content != null && $content->screen_name != ""){
+            // set cookie
+            setcookie(OAUTH_COOKIE, json_encode($access_token), $cookie_life, '/', OAUTH_COOKIE_DOMAIN);
+            header('Location: ./callback.php');
+        }
+        else{
+            header("HTTP/1.0 400 Error");
+            echo "Failed to validate credentials.";
+        }
         exit;
     }
     else{
-       // redirect
+        // redirect
         if(isset($_SESSION['oauth_referrer'])){
             header('Location: '.$_SESSION['oauth_referrer']);
         }
