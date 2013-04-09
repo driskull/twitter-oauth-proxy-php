@@ -65,8 +65,9 @@ if (isset($access_token['oauth_token']) && isset($access_token['oauth_token_secr
     //  echo "\n\nsecret ". $oauth_token_secret.", ".$access_token['oauth_token_secret']."\n\n";
     //**************************
 
-    $oauth_token = $encrypt->decrypt(base64_decode($access_token['oauth_token'])); echo "oauth ". (string)trim($oauth_token);
-    $oauth_token_secret = $encrypt->decrypt(base64_decode($access_token['oauth_token_secret'])); echo "\n\nsecret ". $oauth_token_secret."\n\n";
+    $oauth_token = $encrypt->decrypt(base64_decode($access_token['oauth_token']));
+    $oauth_token_secret = $encrypt->decrypt(base64_decode($access_token['oauth_token_secret']));
+    $oauth_token_secret."\n\n";
     $connection = new TwitterOAuth(CONSUMER_KEY, CONSUMER_SECRET, (string)trim($oauth_token), (string)trim($oauth_token_secret));
     // if invalid response
     // Create a TwitterOauth object with consumer/user tokens.
