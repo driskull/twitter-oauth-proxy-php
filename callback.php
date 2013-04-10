@@ -7,6 +7,7 @@
 // Start session and load lib
 session_start();
 require_once('twitteroauth/twitteroauth.php');
+require_once('twitteroauth/Encrypt.php');
 require_once('config.php');
 
 $content = null;    //for verification of credentials
