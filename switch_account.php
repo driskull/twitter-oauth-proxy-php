@@ -12,8 +12,8 @@ if(isset($_COOKIE[OAUTH_COOKIE])){
     session_destroy();
     session_start();
     // set referrer url to return to
-    if(isset($_SERVER['HTTP_REFERER'])){
-        $_SESSION['oauth_referrer'] = $_SERVER['HTTP_REFERER'];
+    if(isset($_REQUEST['callback'])){
+        $_SESSION['oauth_referrer'] = urldecode($_REQUEST['callback']);
     }
     else{
         $_SESSION['oauth_referrer'] = OAUTH_CALLBACK;

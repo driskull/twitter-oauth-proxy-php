@@ -24,8 +24,9 @@ $request_token = $auth_connection->getRequestToken(OAUTH_CALLBACK);
 $_SESSION['oauth_token'] = $request_token['oauth_token'];
 $_SESSION['oauth_token_secret'] = $request_token['oauth_token_secret'];
 
-if(isset($_SERVER['HTTP_REFERER'])){
-    $_SESSION['oauth_referrer'] = $_SERVER['HTTP_REFERER'];
+
+if(isset($_REQUEST['callback'])){
+    $_SESSION['oauth_referrer'] = urldecode($_REQUEST['callback']);
 }
 
 if($auth_connection->http_code == 200){
