@@ -25,13 +25,20 @@ $_SESSION['oauth_token'] = $request_token['oauth_token'];
 $_SESSION['oauth_token_secret'] = $request_token['oauth_token_secret'];
 
 
-if(isset($_REQUEST['callback'])){
-    $_SESSION['oauth_referrer'] = urldecode($_REQUEST['callback']);
+if(isset($_REQUEST['redirect_uri'])){
+    $_SESSION['oauth_referrer'] = urldecode($_REQUEST['redirect_uri']);
 }
 
 if($auth_connection->http_code == 200){
-    // Build authorize URL and redirect user to Twitter
-    $url = $auth_connection->getAuthorizeURL($request_token['oauth_token'], true);
+    
+    if(isset($_REQUEST['force_login'])){
+        // Build authorize URL and redirect user to Twitter
+        $url = $auth_connection->getAuthorizeURL($request_token['oauth_token'], false).'&force_login=true';
+    }
+    else{
+        // Build authorize URL and redirect user to Twitter
+        $url = $auth_connection->getAuthorizeURL($request_token['oauth_token'], true);   
+    }
 }
 
 // redirect

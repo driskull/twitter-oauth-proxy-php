@@ -75,7 +75,7 @@ if (isset($access_token['oauth_token']) && isset($access_token['oauth_token_secr
 
     // if invalid response
     if ($connection->http_code === 200 || $connection->http_code === 401) {
-        $content = array('signedout'=>true);
+        $content = array('signedIn'=>false);
     }
     else{
         // query params
@@ -113,7 +113,7 @@ if (isset($access_token['oauth_token']) && isset($access_token['oauth_token_secr
         //Explicitly delete cookie - Added by AndyG. @ v2.0
         if(isset($_REQUEST['d'])){
             setcookie(OAUTH_COOKIE, '', 1, '/', OAUTH_COOKIE_DOMAIN);
-            $content = array('signedout'=>true);
+            $content = array('signedIn'=>false);
             exit;
         }
         //added in V2.0 by AndyG
@@ -130,12 +130,12 @@ if (isset($access_token['oauth_token']) && isset($access_token['oauth_token_secr
         }
         // if errors, signed out
         if (isset($content->errors) && count($content->errors)) {
-            $content = array('signedout'=>true,'error'=>$content->errors);
+            $content = array('signedIn'=>false,'error'=>$content->errors);
         }
     }
 } else {
     // signed out
-    $content = array('signedout'=>true);
+    $content = array('signedIn'=>false);
 }
 
 // if callback set
