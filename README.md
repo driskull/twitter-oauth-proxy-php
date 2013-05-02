@@ -37,10 +37,13 @@ Configure the config.php file
 
 To sign in on behalf of a user, your web application should call the **$OAUTH_URL**/sign_in.php file with a URL parameter named "redirect_uri" and set it the URL that you wish to return to after successfully or unsuccessfully logging in. Make sure that the URL is encoded as a URL parameter.
 
+#### Successful
 On successful login, a user will be redirected to the **$OAUTH_URL**/callback.php file, which will set the encrypted cookie and send them to the "redirect_uri" that you supplied as a parameter to the sign-in page.
 
+#### Unsuccessful
 On unsuccessful login, a user will just be redirected back to the "redirect_uri" URL specified with error URL parameters set by Twitter.
 
+#### User Cancelled
 If a user cancels sign in, they will be redirected to the "redirect_uri" URL.
 
 ### Making Search Requests
