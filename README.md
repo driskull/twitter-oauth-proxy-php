@@ -1,4 +1,4 @@
-# Twitter Search PHP Proxy
+# Twitter oAuth Search Proxy PHP
 
 ## About
 
@@ -81,3 +81,6 @@ This will force them to re-login if they are already logged in allowing them to 
 You can also call the **$OAUTH_URL**/index.php file with the URL parameter "d" set to true to delete the cookie without signing in.
 
 [http://myapp.com/oauth/index.php?d=true](http://myapp.com/oauth/index.php?d=true)
+
+[](Esri Tags: ArcGIS ArcGIS Online Web Application Social Media Template Public JavaScript PHP Proxy Twitter)
+[](Esri Language: PHP)
